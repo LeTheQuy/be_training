@@ -7,10 +7,10 @@ cursor = connection.cursor()
 create_table = "Create table if not Exists users(id integer PRIMARY  key ,username text, password text)"
 cursor.execute(create_table)
 
-create_table = "Create table if not Exists items (name text, price real)"
+create_table = "Create table if not Exists items (id integer  PRIMARY key ,name text, price real)"
 cursor.execute(create_table)
 
-create_table = "insert into items values ( 'item1', 20)"
+create_table = "insert into items values ( '1','item1', 20)"
 cursor.execute(create_table)
 
 connection.commit()
