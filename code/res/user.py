@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from flask_restful import Resource, reqparse
 
 from code.models.user import UserModel
@@ -53,3 +53,11 @@ class UserLogin(Resource):
                     "refresh_token": refresh_token}, 200
         else:
             return {"message": "User not found"}, 401
+
+
+class TokenRefresh(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        user_id = get_jwt_identity()
+        new_token = create_access_token(identity=user_id, fresh=False)
+        return {"access_token": new_token}, 200

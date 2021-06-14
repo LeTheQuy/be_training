@@ -7,7 +7,7 @@ from flask_restful import Api
 
 from code.res.item import Item, ItemList
 from code.res.store import StoreList, Store
-from code.res.user import UserRegister, User, UserLogin
+from code.res.user import UserRegister, User, UserLogin, TokenRefresh
 
 app = Flask(__name__)
 uri = os.environ.get("DATABASE_URL", "sqlite:///../data.db")
@@ -39,6 +39,7 @@ api.add_resource(StoreList, "/stores")
 api.add_resource(UserRegister, "/register")
 api.add_resource(User, "/users/<int:user_id>")
 api.add_resource(UserLogin, "/login")
+api.add_resource(TokenRefresh, "/refresh")
 
 if __name__ == '__main__':
     from db import db
