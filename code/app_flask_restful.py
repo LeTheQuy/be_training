@@ -17,7 +17,7 @@ if uri.startswith("postgres://"):
 app.config["SQLALCHEMY_DATABASE_URI"] = uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
-
+app.config["JWT_SECRET_KEY"] = "quydz"
 app.secret_key = "quydz"
 api = Api(app)
 
