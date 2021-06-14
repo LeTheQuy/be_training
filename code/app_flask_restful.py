@@ -23,6 +23,15 @@ api = Api(app)
 
 jwt = JWTManager(app)
 
+
+@jwt.additional_claims_loader()
+def add_claims_to_jwt(identity):
+    if identity == 1:
+        return {"is_admin": True}
+    else:
+        return {"is_admin": False}
+
+
 api.add_resource(Item, "/items/<string:name>")
 api.add_resource(ItemList, "/items")
 api.add_resource(Store, "/stores/<string:name>")
