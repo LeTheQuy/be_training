@@ -7,7 +7,7 @@ from flask_restful import Api
 from code.res.item import Item, ItemList
 from code.res.store import StoreList, Store
 from code.security import authentication, identify
-from code.res.user import UserRegister
+from code.res.user import UserRegister, User
 
 app = Flask(__name__)
 uri = os.environ.get("DATABASE_URL", "sqlite:///../data.db")
@@ -16,6 +16,7 @@ if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 app.config["SQLALCHEMY_DATABASE_URI"] = uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["PROPAGATE_EXCEPTIONS"] = True
 
 app.secret_key = "quydz"
 api = Api(app)
@@ -27,6 +28,7 @@ api.add_resource(ItemList, "/items")
 api.add_resource(Store, "/stores/<string:name>")
 api.add_resource(StoreList, "/stores")
 api.add_resource(UserRegister, "/register")
+api.add_resource(User, "/users/<int:user_id>")
 
 if __name__ == '__main__':
     from db import db
