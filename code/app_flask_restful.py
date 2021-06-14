@@ -1,13 +1,13 @@
 import os
 
 from flask import Flask
-from flask_jwt import JWT
+from flask_jwt_extended import JWTManager
+
 from flask_restful import Api
 
 from code.res.item import Item, ItemList
 from code.res.store import StoreList, Store
-from code.security import authentication, identify
-from code.res.user import UserRegister, User
+from code.res.user import UserRegister, User, UserLogin
 
 app = Flask(__name__)
 uri = os.environ.get("DATABASE_URL", "sqlite:///../data.db")
@@ -21,7 +21,7 @@ app.config["PROPAGATE_EXCEPTIONS"] = True
 app.secret_key = "quydz"
 api = Api(app)
 
-jwt = JWT(app, authentication, identify)
+jwt = JWTManager(app)
 
 api.add_resource(Item, "/items/<string:name>")
 api.add_resource(ItemList, "/items")
@@ -29,6 +29,7 @@ api.add_resource(Store, "/stores/<string:name>")
 api.add_resource(StoreList, "/stores")
 api.add_resource(UserRegister, "/register")
 api.add_resource(User, "/users/<int:user_id>")
+api.add_resource(UserLogin, "/login")
 
 if __name__ == '__main__':
     from db import db
