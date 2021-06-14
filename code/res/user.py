@@ -9,9 +9,6 @@ _user_parse.add_argument("password", type=str, required=True, help="This field c
 
 
 class UserRegister(Resource):
-    parse = reqparse.RequestParser()
-    parse.add_argument("username", type=str, required=True, help="This field can not be blank!")
-    parse.add_argument("password", type=str, required=True, help="This field can not be blank!")
 
     def post(self):
         data = _user_parse.parse_args()
