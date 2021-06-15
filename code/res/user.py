@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 from flask_restful import Resource, reqparse
 
 from code.models.user import UserModel
@@ -6,6 +6,8 @@ from code.models.user import UserModel
 _user_parse = reqparse.RequestParser()
 _user_parse.add_argument("username", type=str, required=True, help="This field can not be blank!")
 _user_parse.add_argument("password", type=str, required=True, help="This field can not be blank!")
+
+BLACKLIST = set()
 
 
 class UserRegister(Resource):
@@ -53,6 +55,14 @@ class UserLogin(Resource):
                     "refresh_token": refresh_token}, 200
         else:
             return {"message": "User not found"}, 401
+
+
+class UserLogout(Resource):
+    @jwt_required()
+    def post(self):
+        jti = get_jwt()["jti"]
+        BLACKLIST.add(jti)
+        return {"message": "Successfully logged out"}, 200
 
 
 class TokenRefresh(Resource):
