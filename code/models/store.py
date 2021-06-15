@@ -33,3 +33,7 @@ class StoreModel(db.Model):
     @classmethod
     def find_all(cls):
         return cls.query.all()
+
+    @classmethod
+    def get_items_per_page(cls, page, per_page):
+        return cls.query.paginate(page, per_page, error_out=True)
