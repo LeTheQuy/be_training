@@ -1,5 +1,5 @@
 from flask_jwt_extended import jwt_required
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 
 from code.models.store import StoreModel
 
@@ -32,5 +32,12 @@ class Store(Resource):
 
 
 class StoreList(Resource):
+    parse = reqparse.RequestParser()
+    parse.add_argument("page", type=int, required=False, default=1)
+    parse.add_argument("per_page", type=int, required=False, default=20)
+
     def get(self):
-        return {"stores": [item.json() for item in StoreModel.find_all()]}
+        data = StoreList.parse.parse_args()
+        pagination = StoreModel.get_items_per_page(**data)
+        stores = pagination.items()
+        return {"stores": [item.json() for item in stores]}

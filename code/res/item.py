@@ -4,6 +4,34 @@ from flask_restful import Resource, reqparse
 from code.models.item import ItemModel
 
 
+def get_paginated_list(results, url, start, limit):
+    start = int(start)
+    limit = int(limit)
+    count = len(results)
+    if count < start or limit < 0:
+        return {"message": "invalid param"}, 400
+    res = {}
+    res["start"] = start
+    res["limit"] = limit
+    res["count"] = count
+    if start == 1:
+        res['previous'] = ""
+    else:
+        start_copy = max(1, start - limit)
+        limit_copy = start - 1
+        res['previous'] = url + f'?start={start_copy}&limit={limit_copy}'
+
+    if start + limit > count:
+        res['next'] = ''
+    else:
+        start_copy = start + limit
+        limit_copy = min(limit, count - start_copy)
+        res['next'] = url + f'?start={start_copy}&limit={limit_copy}'
+        # finally extract result according to bounds
+    res['items'] = results[(start - 1):(start - 1 + limit)]
+    return res
+
+
 class Item(Resource):
     parse = reqparse.RequestParser()
     parse.add_argument("price", type=float, required=True, help="This field can not be blank!")
@@ -56,14 +84,19 @@ class Item(Resource):
 
 
 class ItemList(Resource):
+    parse = reqparse.RequestParser()
+    parse.add_argument("start", type=int, required=False, default=1)
+    parse.add_argument("limit", type=int, required=False, default=20)
+
     @jwt_required(optional=True)
     def get(self):
         user_id = get_jwt_identity()
-        items = {"items": [item.json() for item in ItemModel.find_all()]}
+        data = ItemList.parse.parse_args()
+
+        items = [item.json() for item in ItemModel.find_all()]
         if user_id:
-            return items
+            items = [item.json() for item in ItemModel.find_all()]
+            return get_paginated_list(items, "/items", **data)
         else:
             return {"items": [item["name"] for item in items],
                     "message": "More data available if you log in."}, 200
-
-
